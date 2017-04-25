@@ -43,6 +43,7 @@ func searchconsoleMain(client *http.Client, argv []string) {
 
 func showSearchConsoleServiceInfo(svc *webmasters.Service) {
 	showSitesInfo(svc)
+	showSearchAnalytics(svc, "https://unamo.com/")
 }
 
 func showSitesInfo(svc *webmasters.Service) {
@@ -59,4 +60,30 @@ func showSitesInfo(svc *webmasters.Service) {
 		fmt.Printf("Force Send Fields: %v\n", site.ForceSendFields)
 		fmt.Printf("Null Fields: %v\n", site.NullFields)
 	}
+}
+
+func showSearchAnalytics(svc *webmasters.Service, siteUrl string) {
+	queryRequest := &webmasters.SearchAnalyticsQueryRequest{
+		EndDate:   "2017-04-25",
+		StartDate: "2017-04-23",
+	}
+
+	searchAnalytics, err := svc.Searchanalytics.Query(siteUrl, queryRequest).Do()
+
+	if err != nil {
+		log.Fatalf("Unable to get list of searchAnalytics")
+	}
+
+	fmt.Fprintln(os.Stderr, "searchAnalytics:")
+	for _, apiDataRow := range searchAnalytics.Rows {
+		fmt.Printf("Clicks: %v\n", apiDataRow.Clicks)
+		fmt.Printf("Ctr: %v\n", apiDataRow.Ctr)
+		fmt.Printf("Impressions: %v\n", apiDataRow.Impressions)
+		fmt.Printf("Keys: %v\n", apiDataRow.Keys)
+		fmt.Printf("Positiones: %v\n", apiDataRow.Position)
+		fmt.Printf("Null Fields: %v\n", apiDataRow.ForceSendFields)
+		fmt.Printf("Null Fields: %v\n", apiDataRow.NullFields)
+	}
+
+	fmt.Printf("ResponseAggregationType: %v\n", searchAnalytics.ResponseAggregationType)
 }
